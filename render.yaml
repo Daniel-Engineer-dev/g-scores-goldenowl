@@ -34,9 +34,9 @@ services:
     buildCommand: cd frontend && npm ci && npm run build
     staticPublishPath: ./frontend/dist
     envVars:
-      # Update this to the backend's public URL after the first deploy.
+      # Points at the deployed backend service.
       - key: VITE_API_URL
-        value: https://gscores-backend.onrender.com/api
+        value: https://gscores-backend-zlpy.onrender.com/api
     routes:
       - type: rewrite
         source: /*

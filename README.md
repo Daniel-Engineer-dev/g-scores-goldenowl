@@ -7,7 +7,8 @@ national score statistics from the Vietnamese 2024 High School Exam
 Built for the [Golden Owl](https://goldenowl.asia) Web Developer Intern
 assignment. The original brief is preserved in [ASSIGNMENT.md](./ASSIGNMENT.md).
 
-> **Demo:** _add your live URL here after deploying_ (see [Deployment](#deployment)).
+> **Live demo:** https://gscores-frontend-4emh.onrender.com
+> _(hosted on Render free tier — the first request may take ~30–60s to wake the service)._
 
 ![UI mockup](./screenshots/mockup-ui.png)
 
