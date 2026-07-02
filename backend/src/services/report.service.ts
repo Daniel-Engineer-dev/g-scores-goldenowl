@@ -1,6 +1,10 @@
 import { scoreRepository, ScoreRepository } from '../repositories/score.repository';
 import { subjectRegistry, SubjectRegistry } from '../domain/SubjectRegistry';
 import { ScoreLevel, SCORE_LEVELS, LEVEL_LABELS } from '../domain/ScoreLevel';
+import { cached } from '../lib/cache';
+
+// The exam dataset is static once seeded, so report results can be cached.
+const REPORT_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 export interface SubjectStatistics {
   code: string;
@@ -31,7 +35,13 @@ export class ReportService {
   ) {}
 
   /** Per-subject counts across the 4 report levels (data for the chart). */
-  async getStatistics(): Promise<StatisticsReport> {
+  getStatistics(): Promise<StatisticsReport> {
+    return cached('report:statistics', REPORT_TTL_MS, () =>
+      this.computeStatistics(),
+    );
+  }
+
+  private async computeStatistics(): Promise<StatisticsReport> {
     const rows = await this.repo.getStatistics();
     const byColumn = new Map(rows.map((r) => [r.column, r]));
 
@@ -61,7 +71,13 @@ export class ReportService {
   }
 
   /** Top N Group A students (Math + Physics + Chemistry). */
-  async getTopGroupA(limit = 10): Promise<TopStudent[]> {
+  getTopGroupA(limit = 10): Promise<TopStudent[]> {
+    return cached(`report:top-group-a:${limit}`, REPORT_TTL_MS, () =>
+      this.computeTopGroupA(limit),
+    );
+  }
+
+  private async computeTopGroupA(limit: number): Promise<TopStudent[]> {
     const rows = await this.repo.getTopGroupA(limit);
     return rows.map((r, i) => ({
       rank: i + 1,

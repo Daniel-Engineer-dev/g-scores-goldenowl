@@ -8,6 +8,7 @@ export async function getStatistics(
 ): Promise<void> {
   try {
     const report = await reportService.getStatistics();
+    res.set('Cache-Control', 'public, max-age=600');
     res.json(report);
   } catch (err) {
     next(err);
@@ -21,6 +22,7 @@ export async function getTopGroupA(
 ): Promise<void> {
   try {
     const students = await reportService.getTopGroupA(10);
+    res.set('Cache-Control', 'public, max-age=600');
     res.json(students);
   } catch (err) {
     next(err);
