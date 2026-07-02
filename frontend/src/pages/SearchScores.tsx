@@ -4,6 +4,8 @@ import type { ScoreLookupResult, TopStudent } from '../types';
 import { LEVEL_COLOR, LEVEL_LABEL, LEVEL_NAME } from '../lib/levels';
 import { launchFireworks } from '../lib/fireworks';
 import CelebrationModal from '../components/CelebrationModal';
+import LoadingModal from '../components/LoadingModal';
+import { useDelayedFlag } from '../hooks/useDelayedFlag';
 
 const SBD_PATTERN = /^\d{6,8}$/;
 
@@ -20,6 +22,7 @@ export default function SearchScores() {
   const [loading, setLoading] = useState(false);
   const [topStudents, setTopStudents] = useState<TopStudent[]>([]);
   const [celebration, setCelebration] = useState<Celebration | null>(null);
+  const showLoadingPopup = useDelayedFlag(loading);
 
   // Load the Top 10 Group A list once so we can detect a match on search.
   useEffect(() => {
@@ -137,6 +140,8 @@ export default function SearchScores() {
           </div>
         )}
       </section>
+
+      <LoadingModal open={showLoadingPopup} />
 
       <CelebrationModal
         open={celebration !== null}

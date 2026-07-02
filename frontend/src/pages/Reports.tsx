@@ -12,12 +12,15 @@ import {
 import { fetchStatistics, fetchTopGroupA, apiErrorMessage } from '../api/client';
 import type { StatisticsReport, TopStudent } from '../types';
 import { LEVEL_COLOR, LEVEL_LABEL, LEVEL_ORDER, LEVEL_NAME } from '../lib/levels';
+import LoadingModal from '../components/LoadingModal';
+import { useDelayedFlag } from '../hooks/useDelayedFlag';
 
 export default function Reports() {
   const [stats, setStats] = useState<StatisticsReport | null>(null);
   const [top, setTop] = useState<TopStudent[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const showLoadingPopup = useDelayedFlag(loading);
 
   useEffect(() => {
     let cancelled = false;
@@ -53,6 +56,7 @@ export default function Reports() {
 
   return (
     <div className="page">
+      <LoadingModal open={showLoadingPopup} />
       <section className="card">
         <h2 className="card-title">Score Distribution by Subject</h2>
         <p className="muted">
