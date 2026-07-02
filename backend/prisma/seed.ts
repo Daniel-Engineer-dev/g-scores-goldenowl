@@ -16,7 +16,10 @@ const CSV_PATH = path.resolve(
   __dirname,
   '../../dataset/diem_thi_thpt_2024.csv',
 );
-const BATCH_SIZE = 5000;
+const BATCH_SIZE = Number(process.env.SEED_BATCH_SIZE) || 5000;
+const MAX_RETRIES = 5;
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** Parse a raw cell into a float, or null when empty/invalid. */
 function toFloat(value: string | undefined): number | null {
@@ -53,11 +56,24 @@ function mapRow(row: Record<string, string>): Prisma.ScoreCreateManyInput | null
 }
 
 async function insertBatch(batch: Prisma.ScoreCreateManyInput[]): Promise<number> {
-  const result = await prisma.score.createMany({
-    data: batch,
-    skipDuplicates: true,
-  });
-  return result.count;
+  // Retry transient connection drops (e.g. P1017 on remote/free databases).
+  let lastErr: unknown;
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const result = await prisma.score.createMany({
+        data: batch,
+        skipDuplicates: true,
+      });
+      return result.count;
+    } catch (err) {
+      lastErr = err;
+      console.warn(
+        `   ⚠️  batch insert failed (attempt ${attempt}/${MAX_RETRIES}), retrying...`,
+      );
+      await sleep(1000 * attempt);
+    }
+  }
+  throw lastErr;
 }
 
 async function main() {
