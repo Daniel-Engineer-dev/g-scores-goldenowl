@@ -1,15 +1,32 @@
-import { useState, FormEvent } from 'react';
-import { fetchScore, apiErrorMessage } from '../api/client';
-import type { ScoreLookupResult } from '../types';
+import { useState, useEffect, FormEvent } from 'react';
+import { fetchScore, fetchTopGroupA, apiErrorMessage } from '../api/client';
+import type { ScoreLookupResult, TopStudent } from '../types';
 import { LEVEL_COLOR, LEVEL_LABEL, LEVEL_NAME } from '../lib/levels';
+import { launchFireworks } from '../lib/fireworks';
+import CelebrationModal from '../components/CelebrationModal';
 
 const SBD_PATTERN = /^\d{6,8}$/;
+
+interface Celebration {
+  sbd: string;
+  rank: number;
+  total: number;
+}
 
 export default function SearchScores() {
   const [sbd, setSbd] = useState('');
   const [result, setResult] = useState<ScoreLookupResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [topStudents, setTopStudents] = useState<TopStudent[]>([]);
+  const [celebration, setCelebration] = useState<Celebration | null>(null);
+
+  // Load the Top 10 Group A list once so we can detect a match on search.
+  useEffect(() => {
+    fetchTopGroupA()
+      .then(setTopStudents)
+      .catch(() => setTopStudents([]));
+  }, []);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -27,6 +44,13 @@ export default function SearchScores() {
     try {
       const data = await fetchScore(value);
       setResult(data);
+
+      // Celebrate if this candidate is in the Top 10 of Group A.
+      const top = topStudents.find((s) => s.sbd === data.sbd);
+      if (top) {
+        setCelebration({ sbd: data.sbd, rank: top.rank, total: top.total });
+        launchFireworks();
+      }
     } catch (err) {
       setResult(null);
       setError(apiErrorMessage(err, 'Failed to fetch scores.'));
@@ -113,6 +137,14 @@ export default function SearchScores() {
           </div>
         )}
       </section>
+
+      <CelebrationModal
+        open={celebration !== null}
+        onClose={() => setCelebration(null)}
+        sbd={celebration?.sbd ?? ''}
+        rank={celebration?.rank ?? 0}
+        total={celebration?.total ?? 0}
+      />
     </div>
   );
 }
