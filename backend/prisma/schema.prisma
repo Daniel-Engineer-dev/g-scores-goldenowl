@@ -1,0 +1,33 @@
+// Prisma schema for G-Scores
+// One row per candidate (thí sinh). Subject scores are nullable because
+// candidates only sit for a subset of subjects.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Score {
+  id         Int     @id @default(autoincrement())
+  sbd        String  @unique @db.VarChar(16) // số báo danh (registration number)
+  toan       Float? // Math
+  nguVan     Float?  @map("ngu_van") // Literature
+  ngoaiNgu   Float?  @map("ngoai_ngu") // Foreign language
+  vatLi      Float?  @map("vat_li") // Physics
+  hoaHoc     Float?  @map("hoa_hoc") // Chemistry
+  sinhHoc    Float?  @map("sinh_hoc") // Biology
+  lichSu     Float?  @map("lich_su") // History
+  diaLi      Float?  @map("dia_li") // Geography
+  gdcd       Float? // Civic education
+  maNgoaiNgu String? @map("ma_ngoai_ngu") @db.VarChar(8) // foreign language code
+
+  // Indexes to speed up the Group A top-10 query (math + physics + chemistry)
+  @@index([toan])
+  @@index([vatLi])
+  @@index([hoaHoc])
+  @@map("scores")
+}
