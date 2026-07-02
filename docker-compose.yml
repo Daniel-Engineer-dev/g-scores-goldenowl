@@ -27,6 +27,8 @@ services:
       # Inside the compose network the DB is reached at host "db" on 5432.
       DATABASE_URL: postgresql://${POSTGRES_USER:-gscores}:${POSTGRES_PASSWORD:-gscores_pwd}@db:5432/${POSTGRES_DB:-gscores}?schema=public
       BACKEND_PORT: 4000
+      # Auto-import the CSV on first boot for the one-command local experience.
+      RUN_SEED: "1"
     ports:
       - "${BACKEND_PORT:-4000}:4000"
     depends_on:
