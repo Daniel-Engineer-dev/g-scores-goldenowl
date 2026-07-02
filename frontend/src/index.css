@@ -1,15 +1,64 @@
 :root {
-  --header-bg: #141c8c;
-  --sidebar-from: #f7d117;
-  --sidebar-to: #2f9e8f;
+  /* Layout (theme-independent) */
   --bg: #f4f6fb;
   --card-bg: #ffffff;
   --text: #1b1f2a;
   --muted: #6b7280;
   --border: #e5e7eb;
-  --primary: #111827;
   --header-h: 72px;
   --sidebar-w: 240px;
+
+  /* Themeable tokens — default (Golden Owl) */
+  --header-bg: #141c8c;
+  --header-text: #ffffff;
+  --sidebar-from: #f7d117;
+  --sidebar-to: #2f9e8f;
+  --sidebar-text: #1b1f2a;
+  --sidebar-hover: rgba(255, 255, 255, 0.35);
+  --sidebar-active-bg: rgba(255, 255, 255, 0.55);
+  --primary: #111827;
+  --primary-text: #ffffff;
+  --accent: #141c8c;
+}
+
+/* World Cup team themes — override the themeable tokens above. */
+[data-theme='argentina'] {
+  --header-bg: #6cace4;
+  --header-text: #0b2a45;
+  --sidebar-from: #75aadb;
+  --sidebar-to: #ffffff;
+  --sidebar-text: #0b2a45;
+  --sidebar-hover: rgba(255, 255, 255, 0.5);
+  --sidebar-active-bg: rgba(255, 255, 255, 0.85);
+  --primary: #2b6cb0;
+  --primary-text: #ffffff;
+  --accent: #2b6cb0;
+}
+
+[data-theme='portugal'] {
+  --header-bg: #006233;
+  --header-text: #ffffff;
+  --sidebar-from: #006233;
+  --sidebar-to: #da020e;
+  --sidebar-text: #ffffff;
+  --sidebar-hover: rgba(255, 255, 255, 0.22);
+  --sidebar-active-bg: rgba(255, 255, 255, 0.32);
+  --primary: #da020e;
+  --primary-text: #ffffff;
+  --accent: #006233;
+}
+
+[data-theme='france'] {
+  --header-bg: #002654;
+  --header-text: #ffffff;
+  --sidebar-from: #002654;
+  --sidebar-to: #ed2939;
+  --sidebar-text: #ffffff;
+  --sidebar-hover: rgba(255, 255, 255, 0.22);
+  --sidebar-active-bg: rgba(255, 255, 255, 0.32);
+  --primary: #ed2939;
+  --primary-text: #ffffff;
+  --accent: #002654;
 }
 
 * {
@@ -39,7 +88,7 @@ body {
 .app-header {
   height: var(--header-h);
   background: var(--header-bg);
-  color: #fff;
+  color: var(--header-text);
   display: flex;
   align-items: center;
   padding: 0 24px;
@@ -61,7 +110,7 @@ body {
   display: none;
   background: transparent;
   border: none;
-  color: #fff;
+  color: var(--header-text);
   font-size: 1.5rem;
   cursor: pointer;
 }
@@ -89,7 +138,7 @@ body {
   margin: 0 0 20px;
   font-size: 1.3rem;
   font-weight: 600;
-  color: #1b1f2a;
+  color: var(--sidebar-text);
 }
 
 .sidebar-nav {
@@ -102,19 +151,19 @@ body {
   display: block;
   padding: 10px 12px;
   border-radius: 8px;
-  color: #1b1f2a;
+  color: var(--sidebar-text);
   text-decoration: none;
   font-size: 1.05rem;
   transition: background 0.15s, font-weight 0.15s;
 }
 
 .sidebar-link:hover {
-  background: rgba(255, 255, 255, 0.35);
+  background: var(--sidebar-hover);
 }
 
 .sidebar-link--active {
   font-weight: 700;
-  background: rgba(255, 255, 255, 0.55);
+  background: var(--sidebar-active-bg);
 }
 
 .sidebar-backdrop {
@@ -180,14 +229,14 @@ body {
 
 .text-input:focus {
   outline: none;
-  border-color: var(--header-bg);
-  box-shadow: 0 0 0 3px rgba(20, 28, 140, 0.12);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
 .btn-primary {
   padding: 11px 22px;
   background: var(--primary);
-  color: #fff;
+  color: var(--primary-text);
   border: none;
   border-radius: 8px;
   font-size: 1rem;
@@ -264,7 +313,7 @@ body {
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: var(--header-bg);
+  background: var(--accent);
   color: #fff;
   font-size: 0.85rem;
   font-weight: 600;
@@ -297,6 +346,183 @@ body {
 .dash-card-title {
   margin: 0 0 8px;
   font-size: 1.15rem;
+}
+
+/* ---------- Theme picker (Settings) ---------- */
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.theme-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.theme-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 24, 40, 0.1);
+}
+
+.theme-card--active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.theme-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.theme-flag {
+  width: 32px;
+  height: 22px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  object-fit: cover;
+  display: block;
+}
+
+.theme-name {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.theme-desc {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.theme-swatches {
+  display: flex;
+  gap: 6px;
+}
+
+.theme-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.theme-check {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+
+/* ---------- Celebration modal ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(11, 15, 25, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: overlay-in 0.2s ease;
+}
+
+.modal-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 32px 34px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: card-in 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+.celebration {
+  text-align: center;
+}
+
+.celebration-emoji {
+  font-size: 2.4rem;
+  margin-bottom: 6px;
+}
+
+.celebration-title {
+  margin: 0 0 10px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.celebration-text {
+  margin: 0 0 20px;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.celebration-stats {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.celebration-stat {
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+  padding: 14px 10px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.celebration-stat-value {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.celebration-stat-label {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* ---------- Responsive ---------- */
