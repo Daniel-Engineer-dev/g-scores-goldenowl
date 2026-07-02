@@ -1,0 +1,52 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: gscores_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-gscores}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gscores_pwd}
+      POSTGRES_DB: ${POSTGRES_DB:-gscores}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-gscores} -d ${POSTGRES_DB:-gscores}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: gscores_backend
+    restart: unless-stopped
+    environment:
+      # Inside the compose network the DB is reached at host "db" on 5432.
+      DATABASE_URL: postgresql://${POSTGRES_USER:-gscores}:${POSTGRES_PASSWORD:-gscores_pwd}@db:5432/${POSTGRES_DB:-gscores}?schema=public
+      BACKEND_PORT: 4000
+    ports:
+      - "${BACKEND_PORT:-4000}:4000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        # Baked into the bundle at build time; the browser calls the
+        # backend via the host-published port.
+        VITE_API_URL: http://localhost:${BACKEND_PORT:-4000}/api
+    container_name: gscores_frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
