@@ -1,0 +1,40 @@
+name: Keep Render awake
+
+# Render's free web service spins down after ~15 minutes of inactivity, which
+# causes a slow cold start. This workflow pings the backend health endpoint on
+# a schedule so the service stays warm.
+#
+# Notes:
+# - GitHub cron runs in UTC; the minimum interval is 5 minutes and scheduled
+#   runs can be delayed when the platform is busy.
+# - Scheduled workflows are automatically disabled after 60 days without repo
+#   activity — push any commit to re-enable.
+# - Override the target by setting a repo variable RENDER_BACKEND_URL.
+
+on:
+  schedule:
+    - cron: '*/10 * * * *' # every 10 minutes
+  workflow_dispatch: {} # allow manual runs from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend health endpoint
+        env:
+          BASE_URL: ${{ vars.RENDER_BACKEND_URL || 'https://gscores-backend-zlpy.onrender.com' }}
+        run: |
+          URL="$BASE_URL/api/health"
+          echo "Pinging $URL"
+          # Retry to absorb a cold start (first wake can take 30-60s).
+          for attempt in 1 2 3 4 5; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 70 "$URL" || echo "000")
+            echo "Attempt $attempt -> HTTP $code"
+            if [ "$code" = "200" ]; then
+              echo "Backend is awake ✅"
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "Backend did not return 200 after retries ❌"
+          exit 1
