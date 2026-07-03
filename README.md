@@ -10,7 +10,7 @@ assignment. The original brief is preserved in [ASSIGNMENT.md](./ASSIGNMENT.md).
 > **Live demo:** https://gscores-frontend-4emh.onrender.com
 > _(hosted on Render free tier — the first request may take ~30–60s to wake the service)._
 >
-> **Walkthrough video:** https://drive.google.com/drive/folders/1rs4hZgzT5x9XUYxbWi9Mbc140wsrqLcK?usp=sharing
+> **Walkthrough video:** https://drive.google.com/file/d/1DCkNebABnR5XBaNuMjqgpKxyRmO87qfI/view?usp=drive_link
 > _(architecture overview + app demo, with voice-over — built with [Remotion](https://www.remotion.dev/), a popular React framework for making videos in code)._
 
 ![UI mockup](./screenshots/mockup-ui.png)
