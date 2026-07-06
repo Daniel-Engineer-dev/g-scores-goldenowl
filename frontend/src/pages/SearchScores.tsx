@@ -7,7 +7,7 @@ import CelebrationModal from '../components/CelebrationModal';
 import LoadingModal from '../components/LoadingModal';
 import { useDelayedFlag } from '../hooks/useDelayedFlag';
 
-const SBD_PATTERN = /^\d{6,8}$/;
+const SBD_PATTERN = /^\d{8}$/;
 
 interface Celebration {
   sbd: string;
@@ -37,7 +37,7 @@ export default function SearchScores() {
 
     // Client-side validation (backend validates again).
     if (!SBD_PATTERN.test(value)) {
-      setError('Registration number must contain 6-8 digits.');
+      setError('Registration number must be exactly 8 digits.');
       setResult(null);
       return;
     }
@@ -76,7 +76,8 @@ export default function SearchScores() {
               className="text-input"
               type="text"
               inputMode="numeric"
-              placeholder="Enter registration number"
+              maxLength={8}
+              placeholder="Enter registration number (8 digits)"
               value={sbd}
               onChange={(e) => setSbd(e.target.value)}
             />
