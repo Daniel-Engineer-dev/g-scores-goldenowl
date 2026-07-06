@@ -39,7 +39,7 @@ export class ScoreRepository {
           COUNT(*) FILTER (WHERE "${c}" >= 8) AS "${c}_excellent",
           COUNT(*) FILTER (WHERE "${c}" >= 6 AND "${c}" < 8) AS "${c}_good",
           COUNT(*) FILTER (WHERE "${c}" >= 4 AND "${c}" < 6) AS "${c}_average",
-          COUNT(*) FILTER (WHERE "${c}" >= 0 AND "${c}" < 4) AS "${c}_poor"`;
+          COUNT(*) FILTER (WHERE "${c}" IS NOT NULL AND "${c}" < 4) AS "${c}_poor"`;
       })
       .join(',');
 
