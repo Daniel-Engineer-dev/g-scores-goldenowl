@@ -205,6 +205,7 @@ Then update the **Demo** link at the top of this README.
 | `npm run dev`             | dev server with reload             |
 | `npm run build`           | compile TypeScript                 |
 | `npm start`               | run compiled server                |
+| `npm test`                | run unit tests (Vitest)            |
 | `npm run seed`            | import CSV into DB                  |
 | `npx prisma migrate deploy` | apply migrations                 |
 | `npx prisma studio`       | browse the DB in the browser       |

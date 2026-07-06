@@ -11,14 +11,14 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
     "seed": "ts-node --transpile-only prisma/seed.ts",
-    "seed:prod": "node dist/prisma/seed.js"
+    "seed:prod": "node dist/prisma/seed.js",
+    "test": "vitest run"
   },
   "prisma": {
     "seed": "ts-node --transpile-only prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
-    "class-validator": "^0.14.1",
     "cors": "^2.8.5",
     "csv-parse": "^5.5.6",
     "dotenv": "^16.4.5",
@@ -31,6 +31,7 @@
     "@types/node": "^22.9.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
   }
 }
