@@ -4,7 +4,7 @@ interface Props {
 }
 
 const DEFAULT_MESSAGE =
-  'The first request may take a few seconds while the server wakes up and builds its cache. Subsequent requests will be much faster — thanks for your patience!';
+  'The backend is hosted on a free tier and sleeps when idle, so the first request may take up to ~30–60s while it wakes up and builds its cache. Subsequent requests are much faster — thanks for your patience!';
 
 /**
  * Blocking loading popup shown during slow (first / uncached) requests.
